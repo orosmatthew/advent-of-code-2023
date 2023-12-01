@@ -1,3 +1,4 @@
+#include <array>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -14,7 +15,7 @@ std::string read_data(const std::filesystem::path& path)
 
 int main()
 {
-    const std::string data = read_data("../day-1-half-1/input.txt");
+    const std::string data = read_data("../day-1-part-1/input.txt");
     int total = 0;
     std::optional<char> first;
     std::optional<char> last;
@@ -27,8 +28,8 @@ int main()
         }
         else if (c == '\n') {
             assert(first.has_value() && last.has_value() && "There must be at least one number");
-            const char num_str[3] = { first.value(), last.value(), '\0' };
-            total += std::stoi(num_str);
+            std::array num_str = { first.value(), last.value(), '\0' };
+            total += std::stoi(num_str.data());
             first.reset();
             last.reset();
         }
