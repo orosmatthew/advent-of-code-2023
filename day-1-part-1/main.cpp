@@ -39,7 +39,7 @@ int solve(const std::string& data)
 
 int main()
 {
-    const std::string data = read_data("../day-1-part-1/input.txt");
+    const std::string data = read_data("./day-1-part-1/input.txt");
 
 #ifdef BENCHMARK
     constexpr int n_runs = 10000;
