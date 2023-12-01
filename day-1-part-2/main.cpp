@@ -20,60 +20,69 @@ struct DigitStr {
     char value;
 };
 
+int solve(const std::string& data)
+{
+    int total = 0;
+
+    std::array<DigitStr, 9> digit_strs
+        = { { { "one", 3, '1' },
+              { "two", 3, '2' },
+              { "three", 5, '3' },
+              { "four", 4, '4' },
+              { "five", 4, '5' },
+              { "six", 3, '6' },
+              { "seven", 5, '7' },
+              { "eight", 5, '8' },
+              { "nine", 4, '9' } } };
+
+    std::optional<char> first;
+    std::optional<char> last;
+    for (const char& c : data) {
+        if (std::isdigit(c)) {
+            if (!first.has_value()) {
+                first = c;
+            }
+            last = c;
+        }
+        else if (std::isalpha(c)) {
+            for (const auto [str, length, value] : digit_strs) {
+                if (std::strncmp(&c, str, length) == 0) {
+                    if (!first.has_value()) {
+                        first = value;
+                    }
+                    last = value;
+                    break;
+                }
+            }
+        }
+        else if (c == '\n') {
+            assert(first.has_value() && last.has_value() && "There must be at least one number");
+            std::array num_str = { first.value(), last.value(), '\0' };
+            total += std::stoi(num_str.data());
+            first.reset();
+            last.reset();
+        }
+    }
+    return total;
+}
+
 int main()
 {
     const std::string data = read_data("../day-1-part-2/input.txt");
 
+#ifdef BENCHMARK
     constexpr int n_runs = 10000;
     double time_running_total = 0.0;
+
     for (int n_run = 0; n_run < n_runs; ++n_run) {
         auto start = std::chrono::high_resolution_clock::now();
-
-        int total = 0;
-
-        std::array<DigitStr, 9> digit_strs
-            = { { { "one", 3, '1' },
-                  { "two", 3, '2' },
-                  { "three", 5, '3' },
-                  { "four", 4, '4' },
-                  { "five", 4, '5' },
-                  { "six", 3, '6' },
-                  { "seven", 5, '7' },
-                  { "eight", 5, '8' },
-                  { "nine", 4, '9' } } };
-
-        std::optional<char> first;
-        std::optional<char> last;
-        for (const char& c : data) {
-            if (std::isdigit(c)) {
-                if (!first.has_value()) {
-                    first = c;
-                }
-                last = c;
-            }
-            else if (std::isalpha(c)) {
-                for (const auto [str, length, value] : digit_strs) {
-                    if (std::strncmp(&c, str, length) == 0) {
-                        if (!first.has_value()) {
-                            first = value;
-                        }
-                        last = value;
-                        break;
-                    }
-                }
-            }
-            else if (c == '\n') {
-                assert(first.has_value() && last.has_value() && "There must be at least one number");
-                std::array num_str = { first.value(), last.value(), '\0' };
-                total += std::stoi(num_str.data());
-                first.reset();
-                last.reset();
-            }
-        }
-        // std::cout << total << std::endl;
-
+        solve(data);
         auto end = std::chrono::high_resolution_clock::now();
         time_running_total += std::chrono::duration<double, std::nano>(end - start).count();
     }
+
     std::cout << "Average ns: " << time_running_total / n_runs << std::endl;
+#else
+    std::cout << solve(data) << std::endl;
+#endif
 }

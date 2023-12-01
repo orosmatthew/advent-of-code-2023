@@ -13,9 +13,8 @@ std::string read_data(const std::filesystem::path& path)
     return ss.str();
 }
 
-int main()
+int solve(const std::string& data)
 {
-    const std::string data = read_data("../day-1-part-1/input.txt");
     int total = 0;
     std::optional<char> first;
     std::optional<char> last;
@@ -35,5 +34,26 @@ int main()
         }
     }
 
-    std::cout << total << std::endl;
+    return total;
+}
+
+int main()
+{
+    const std::string data = read_data("../day-1-part-1/input.txt");
+
+#ifdef BENCHMARK
+    constexpr int n_runs = 10000;
+    double time_running_total = 0.0;
+
+    for (int n_run = 0; n_run < n_runs; ++n_run) {
+        auto start = std::chrono::high_resolution_clock::now();
+        solve(data);
+        auto end = std::chrono::high_resolution_clock::now();
+        time_running_total += std::chrono::duration<double, std::nano>(end - start).count();
+    }
+
+    std::cout << "Average ns: " << time_running_total / n_runs << std::endl;
+#else
+    std::cout << solve(data) << std::endl;
+#endif
 }
