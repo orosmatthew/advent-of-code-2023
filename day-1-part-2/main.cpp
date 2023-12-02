@@ -55,7 +55,7 @@ static int solve(const std::string& data)
             }
             if (data[forward_idx] >= 'a' && data[forward_idx] <= 'z') {
                 for (const auto [str, length, value] : digit_strs) {
-                    if (cmp_str(&data[forward_idx], str, length)) {
+                    if (std::memcmp(&data[forward_idx], str, length) == 0) {
                         first = value;
                         goto first_done;
                     }
@@ -80,7 +80,7 @@ static int solve(const std::string& data)
             }
             if (data[reverse_idx] >= 'a' && data[reverse_idx] <= 'z') {
                 for (const auto [str, length, value] : digit_strs) {
-                    if (cmp_str(&data[reverse_idx], str, length)) {
+                    if (std::memcmp(&data[reverse_idx], str, length) == 0) {
                         last = value;
                         goto last_done;
                     }
