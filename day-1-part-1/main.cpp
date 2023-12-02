@@ -1,10 +1,10 @@
 #include <array>
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <optional>
 #include <sstream>
-#include <filesystem>
 
 std::string read_data(const std::filesystem::path& path)
 {
@@ -37,6 +37,8 @@ int solve(const std::string& data)
 
     return total;
 }
+
+// #define BENCHMARK
 
 int main()
 {
