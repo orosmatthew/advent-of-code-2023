@@ -9,7 +9,7 @@ Clang is my preferred compiler ;)
 ```bash
 git clone https://github.com/orosmatthew/advent-of-code-2023/tree/master
 cd advent-of-code-2023
-# Add -DBENCHMARK for benchmarking
+# Add -DBENCHMARK=On for benchmarking
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release 
 cmake --build build
 ```
