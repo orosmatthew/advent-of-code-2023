@@ -91,7 +91,7 @@ static int solve(const std::string& data)
     return power_sum;
 }
 
-#define BENCHMARK
+// #define BENCHMARK
 
 int main()
 {
