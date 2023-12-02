@@ -11,3 +11,5 @@ endif ()
 
 add_executable(day-1-part-1 day-1-part-1/main.cpp)
 add_executable(day-1-part-2 day-1-part-2/main.cpp)
+
+add_executable(day-2-part-1 day-2-part-1/main.cpp)
