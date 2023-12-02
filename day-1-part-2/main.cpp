@@ -20,7 +20,7 @@ static bool cmp_str(const char* a, const char* b, const int n)
             return false;
         }
         if (a[i] == '\0' && b[i] == '\0') {
-            break;
+            return true;
         }
     }
     return true;
@@ -98,7 +98,7 @@ static int solve(const std::string& data)
     return total;
 }
 
-// #define BENCHMARK
+#define BENCHMARK
 
 int main()
 {
