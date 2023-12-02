@@ -19,9 +19,6 @@ static bool cmp_str(const char* a, const char* b, const int n)
         if (a[i] != b[i]) {
             return false;
         }
-        if (a[i] == '\0' && b[i] == '\0') {
-            return true;
-        }
     }
     return true;
 }
