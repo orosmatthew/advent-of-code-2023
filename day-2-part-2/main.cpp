@@ -5,6 +5,7 @@
 #include <iostream>
 #include <optional>
 #include <sstream>
+#include <cstring>
 
 static std::string read_data(const std::filesystem::path& path)
 {
@@ -90,7 +91,7 @@ static int solve(const std::string& data)
     return power_sum;
 }
 
-// #define BENCHMARK
+#define BENCHMARK
 
 int main()
 {

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <optional>
 #include <sstream>
+#include <cstring>
 
 static std::string read_data(const std::filesystem::path& path)
 {
