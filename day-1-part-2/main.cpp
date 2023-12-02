@@ -14,16 +14,6 @@ static std::string read_data(const std::filesystem::path& path)
     return ss.str();
 }
 
-static bool cmp_str(const char* a, const char* b, const int n)
-{
-    for (int i = 0; i < n; ++i) {
-        if (a[i] != b[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 struct DigitStr {
     const char* str;
     int length;
