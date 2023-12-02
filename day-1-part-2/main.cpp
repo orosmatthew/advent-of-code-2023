@@ -45,7 +45,7 @@ static int solve(const std::string& data)
               { "nine", 4, 9 } } };
 
     for (int i = 0; i < data.size(); ++i) {
-        std::optional<int> first;
+        int first = -1;
         int forward_idx = i;
         for (; forward_idx < data.size(); ++forward_idx) {
             if (data[forward_idx] >= '0' && data[forward_idx] <= '9') {
@@ -71,7 +71,7 @@ static int solve(const std::string& data)
                 break;
             }
         }
-        std::optional<int> last;
+        int last = -1;
         for (; reverse_idx >= forward_idx; --reverse_idx) {
             if (data[reverse_idx] >= '0' && data[reverse_idx] <= '9') {
                 last = data[reverse_idx] - '0';
@@ -87,8 +87,8 @@ static int solve(const std::string& data)
             }
         }
     last_done:
-        assert(first.has_value() && last.has_value() && "There must be at least one number");
-        total += 10 * first.value() + last.value();
+        assert(first != -1 && last != -1 && "There must be at least one number");
+        total += 10 * first + last;
         i = next_idx;
     }
 
