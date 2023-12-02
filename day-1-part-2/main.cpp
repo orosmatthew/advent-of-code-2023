@@ -1,9 +1,9 @@
 #include <array>
 #include <cassert>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <optional>
 #include <sstream>
 
 static std::string read_data(const std::filesystem::path& path)
