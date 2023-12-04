@@ -77,7 +77,7 @@ static int solve(const std::string& data)
     return total;
 }
 
-#define BENCHMARK
+// #define BENCHMARK
 
 int main()
 {
