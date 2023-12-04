@@ -59,27 +59,25 @@ static int solve(const std::string& data)
                 num_buffer[num_size] = data[current_idx] - '0';
                 num_size++;
             }
-            if (!is_digit || x == size - 1) {
-                if (num_size != 0) {
-                    for (int n = 0; n < num_size; ++n) {
-                        for (const auto [offset_x, offset_y] : check_offsets) {
-                            const std::optional<int> idx = pos_to_idx(size, { x - n - 1 + offset_x, y + offset_y });
-                            if (!idx.has_value()) {
-                                continue;
-                            }
-                            if (data[*idx] != '.' && !(data[*idx] >= '0' && data[*idx] <= '9')) {
-                                goto has_symbol;
-                            }
+            if ((!is_digit || x == size - 1) && num_size != 0) {
+                for (int n = 0; n < num_size; ++n) {
+                    for (const auto [offset_x, offset_y] : check_offsets) {
+                        const std::optional<int> idx = pos_to_idx(size, { x - n - 1 + offset_x, y + offset_y });
+                        if (!idx.has_value()) {
+                            continue;
+                        }
+                        if (data[*idx] != '.' && !(data[*idx] >= '0' && data[*idx] <= '9')) {
+                            goto has_symbol;
                         }
                     }
-                    num_size = 0;
-                    continue;
-                has_symbol:
-                    for (int n = 0; n < num_size; ++n) {
-                        total += pow10[num_size - n - 1] * num_buffer[n];
-                    }
-                    num_size = 0;
                 }
+                num_size = 0;
+                continue;
+            has_symbol:
+                for (int n = 0; n < num_size; ++n) {
+                    total += pow10[num_size - n - 1] * num_buffer[n];
+                }
+                num_size = 0;
             }
         }
         num_size = 0;
