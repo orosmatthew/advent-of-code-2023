@@ -72,10 +72,9 @@ static int matches(std::array<int, 256>& matches_arr, const std::string& data)
     return n_matches;
 }
 
-static std::array<std::optional<int>, 256> count_cards_cache {};
-
 static int count_cards(const std::array<int, 256>& matches_arr, const int idx) // NOLINT(*-no-recursion)
 {
+    static std::array<std::optional<int>, 256> count_cards_cache {};
     if (const std::optional<int> cached_value = count_cards_cache[idx]) {
         return *cached_value;
     }
@@ -98,7 +97,7 @@ static int solve(const std::string& data)
     return total;
 }
 
-// #define BENCHMARK
+#define BENCHMARK
 
 int main()
 {
