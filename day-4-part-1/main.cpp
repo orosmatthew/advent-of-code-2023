@@ -1,4 +1,5 @@
 #include <array>
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -14,12 +15,11 @@ static std::string read_data(const std::filesystem::path& path)
 
 static int parse_num(int& result, const std::string& data, const int start_idx)
 {
-    std::array<int, 3> num_buffer; // NOLINT(*-pro-type-member-init)
+    static std::array<int, 3> num_buffer; // NOLINT(*-pro-type-member-init)
     int num_size = 0;
 
     int idx = start_idx;
-    // move past whitespace
-    while (!(data[idx] >= '0' && data[idx] <= '9')) {
+    while (data[idx] == ' ' || data[idx] == '|') {
         idx++;
     }
     while (data[idx] >= '0' && data[idx] <= '9') {
@@ -27,43 +27,48 @@ static int parse_num(int& result, const std::string& data, const int start_idx)
         num_size++;
         idx++;
     }
-    static std::array pow10 { 1, 10, 100 };
-    result = 0;
-    for (int n = 0; n < num_size; ++n) {
-        result += pow10[num_size - n - 1] * num_buffer[n];
+    switch (num_size) {
+    case 1:
+        result = num_buffer[0];
+        break;
+    case 2:
+        result = 10 * num_buffer[0] + num_buffer[1];
+        break;
+    case 3:
+        result = 100 * num_buffer[0] + 10 * num_buffer[1] + num_buffer[2];
+        break;
+    default:
+        throw std::runtime_error("Unreachable");
     }
     return idx;
 }
 
 static int solve(const std::string& data)
 {
-    std::array<int, 10> winning_nums; // NOLINT(*-pro-type-member-init)
-
     int total = 0;
     for (int idx = 0; idx < data.size(); ++idx) {
-        // move past "Card X:"
+        std::bitset<128> winning_nums { 0 };
+        // move past "Card X"
         while (data[idx] != ':') {
             idx++;
         }
         idx++; // for ":"
-        int winning_nums_size = 0;
         while (data[idx + 1] != '|') {
-            idx = parse_num(winning_nums[winning_nums_size++], data, idx);
+            int winning_num;
+            idx = parse_num(winning_num, data, idx);
+            winning_nums[winning_num] = true;
         }
 
         int score = 0;
         while (data[idx] != '\n') {
             int num;
             idx = parse_num(num, data, idx);
-            for (int i = 0; i < winning_nums_size; ++i) {
-                if (num == winning_nums[i]) {
-                    if (score == 0) {
-                        score = 1;
-                    }
-                    else {
-                        score *= 2;
-                    }
-                    break;
+            if (winning_nums[num] == true) {
+                if (score == 0) {
+                    score = 1;
+                }
+                else {
+                    score *= 2;
                 }
             }
         }
