@@ -12,11 +12,6 @@ static std::string read_data(const std::filesystem::path& path)
     return ss.str();
 }
 
-static bool is_digit(const char c)
-{
-    return c >= '0' && c <= '9';
-}
-
 static int parse_num(int& result, const std::string& data, const int start_idx)
 {
     std::array<int, 3> num_buffer; // NOLINT(*-pro-type-member-init)
@@ -24,10 +19,10 @@ static int parse_num(int& result, const std::string& data, const int start_idx)
 
     int idx = start_idx;
     // move past whitespace
-    while (!is_digit(data[idx])) {
+    while (!(data[idx] >= '0' && data[idx] <= '9')) {
         idx++;
     }
-    while (is_digit(data[idx])) {
+    while (data[idx] >= '0' && data[idx] <= '9') {
         num_buffer[num_size] = data[idx] - '0';
         num_size++;
         idx++;
