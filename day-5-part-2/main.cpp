@@ -66,32 +66,9 @@ static std::optional<MapRangeResult> map_range(const Range& range, const Range& 
     return result;
 }
 
-[[nodiscard]] static std::vector<Range> consolidate_ranges(std::vector<Range>& ranges)
+static int parse_and_apply_map(std::vector<Range>& seed_ranges, const std::string& data, const int start_idx)
 {
-    assert(!ranges.empty());
-
-    std::ranges::remove_if(ranges, [](const Range& range) { return range.start > range.end; });
-
-    std::ranges::sort(ranges, [](const Range& a, const Range& b) { return a.start < b.start; });
-
-    std::vector<Range> consolidated;
-    consolidated.push_back(ranges[0]);
-
-    for (const Range range : ranges) {
-        if (auto& [start, end] = consolidated.back(); range.start <= end) {
-            end = range.end;
-        }
-        else {
-            consolidated.push_back(range);
-        }
-    }
-    return consolidated;
-}
-
-static std::pair<int, std::vector<Range>> parse_and_apply_map(
-    const std::vector<Range>& seed_ranges, const std::string& data, const int start_idx)
-{
-    std::vector<Range> moved_ranges;
+    std::vector<Range> new_ranges;
     int i = start_idx - 1;
     do {
         i++;
@@ -103,19 +80,38 @@ static std::pair<int, std::vector<Range>> parse_and_apply_map(
         i++;
         uint32_t length;
         i = parse_num(length, data, i);
-        for (const Range& range : seed_ranges) {
+        for (int s = 0; s < seed_ranges.size(); ++s) {
             std::optional<MapRangeResult> result
-                = map_range(range, { src_start, src_start + length - 1 }, dst_start - src_start);
+                = map_range(seed_ranges[s], { src_start, src_start + length - 1 }, dst_start - src_start);
             if (!result.has_value()) {
                 continue;
             }
-            moved_ranges.push_back(result->moved);
+            bool modified = false;
+            if (result->extra_left.has_value()) {
+                modified = true;
+                seed_ranges[s] = *result->extra_left;
+            }
+            if (result->extra_right.has_value()) {
+                if (modified) {
+                    new_ranges.push_back(*result->extra_right);
+                }
+                else {
+                    seed_ranges[s] = *result->extra_right;
+                }
+            }
+            if (!result->extra_right.has_value() && !result->extra_left.has_value()) {
+                seed_ranges.erase(seed_ranges.begin() + s);
+                s--;
+            }
+            new_ranges.push_back(result->moved);
         }
     } while (data[i] == '\n' && i + 1 < data.size() && data[i + 1] != '\n');
 
-    // TODO: subtract ranges
+    for (const Range& range : new_ranges) {
+        seed_ranges.push_back(range);
+    }
 
-    return { i, new_ranges };
+    return i;
 }
 
 static uint32_t solve(const std::string& data)
@@ -132,23 +128,26 @@ static uint32_t solve(const std::string& data)
         seed_ranges.push_back(Range { start, start + length - 1 });
     }
 
-    // seed_ranges = consolidate_ranges(seed_ranges);
-
     for (constexpr std::array offsets { 19, 26, 27, 23, 28, 31, 28 }; const int offset : offsets) {
         i += offset;
-        auto [new_idx, new_ranges] = parse_and_apply_map(seed_ranges, data, i);
-        i = new_idx;
-        seed_ranges = std::move(new_ranges);
+        i = parse_and_apply_map(seed_ranges, data, i);
     }
 
-    return seed_ranges[0].start;
+    uint32_t min_loc = seed_ranges[0].start;
+    for (int m = 1; m < seed_ranges.size(); ++m) {
+        if (seed_ranges[m].start < min_loc) {
+            min_loc = seed_ranges[m].start;
+        }
+    }
+    return min_loc;
+    ;
 }
 
 // #define BENCHMARK
 
 int main()
 {
-    const std::string data = read_data("./day-5-part-2/sample.txt");
+    const std::string data = read_data("./day-5-part-2/input.txt");
 
 #ifdef BENCHMARK
     constexpr int n_runs = 100000;
