@@ -7,7 +7,7 @@ My advent of code solutions. The goal is to have the fasted execution speed so b
 All tests are performed on latest Windows 11 23H2 with Clang 17 using a 12600K CPU. The benchmarks do not include loading the input file into memory, only solving the problem.
 
 |   Problem    | Average Nanoseconds | Iterations |
-| :----------: |:-------------------:| :--------: |
+| :----------: | :-----------------: | :--------: |
 | Day 1 Part 1 |       16,865        |  100,000   |
 | Day 1 Part 2 |       21,222        |  100,000   |
 | Day 2 Part 1 |        3,271        |  100,000   |
@@ -16,6 +16,8 @@ All tests are performed on latest Windows 11 23H2 with Clang 17 using a 12600K C
 | Day 3 Part 2 |       12,473        |  100,000   |
 | Day 4 Part 1 |       23,489        |  100,000   |
 | Day 4 Part 2 |       22,485        |  100,000   |
+| Day 5 Part 1 |        7,729        |  100,000   |
+| Day 5 Part 2 |       15,268        |  100,000   |
 
 ## Build Instructions
 
