@@ -1,6 +1,6 @@
 # Advent of Code 2023 in C++
 
-My advent of code solutions. The goal is to have the fasted execution speed so benchmarking code is added to each day.
+My advent of code solutions. The goal is to have the fastest execution speed so benchmarking code is added to each day.
 
 ## Benchmarks
 
