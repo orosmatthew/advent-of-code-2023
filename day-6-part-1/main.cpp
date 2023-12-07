@@ -58,18 +58,15 @@ static int solve(const std::string& data)
     int total = 0;
     for (int time_idx = 0; time_idx < times_size; ++time_idx) {
         int best_dist;
+        const int& time = times[time_idx];
         i = parse_num(best_dist, data, i);
-        int ways = 0;
-        for (int t = 0; t < times[time_idx]; ++t) {
-            if (t * (times[time_idx] - t) > best_dist) {
-                ways++;
-            }
-        }
+        const int max = std::floor((-time - std::sqrt(time * time - 4 * best_dist)) / -2);
+        const int min = std::ceil((-time + std::sqrt(time * time - 4 * best_dist)) / -2);
         if (total == 0) {
-            total = ways;
+            total = max - min + 1;
         }
         else {
-            total *= ways;
+            total *= max - min + 1;
         }
     }
 
