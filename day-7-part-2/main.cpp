@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -120,41 +119,117 @@ private:
         for (int i = 0; i < 5; ++i) {
             occurrences[calc_card_index(m_cards[i])]++;
         }
-        bool three = false;
-        int pairs = 0;
-        for (int i = 0; i < 13; ++i) {
-            if (occurrences[i] == 5) {
+
+        auto calc_basic_type = [&occurrences]() -> HandType {
+            bool three = false;
+            int pairs = 0;
+            for (int i = 0; i < 13; ++i) {
+                if (i == 9) {
+                    continue;
+                }
+                if (occurrences[i] == 5) {
+                    return HandType::five_of_kind;
+                }
+                if (occurrences[i] == 4) {
+                    return HandType::four_of_kind;
+                }
+                if (occurrences[i] == 3) {
+                    three = true;
+                }
+                if (occurrences[i] == 2) {
+                    pairs++;
+                }
+            }
+            if (three) {
+                if (pairs != 0) {
+                    return HandType::full_house;
+                }
+                return HandType::three_of_kind;
+            }
+            if (pairs == 2) {
+                return HandType::two_pair;
+            }
+            if (pairs == 1) {
+                return HandType::one_pair;
+            }
+            return HandType::high_card;
+        };
+
+        const int jokers = occurrences[9];
+        switch (calc_basic_type()) {
+        case HandType::five_of_kind:
+            m_hand_type = HandType::five_of_kind;
+            return;
+        case HandType::four_of_kind:
+            if (jokers == 1) {
                 m_hand_type = HandType::five_of_kind;
                 return;
             }
-            if (occurrences[i] == 4) {
+            m_hand_type = HandType::four_of_kind;
+            return;
+        case HandType::full_house:
+            if (jokers == 3 || jokers == 2) {
+                m_hand_type = HandType::five_of_kind;
+                return;
+            }
+            m_hand_type = HandType::full_house;
+            return;
+        case HandType::three_of_kind:
+            if (jokers == 3 || jokers == 1) {
                 m_hand_type = HandType::four_of_kind;
                 return;
             }
-            if (occurrences[i] == 3) {
-                three = true;
-            }
-            if (occurrences[i] == 2) {
-                pairs++;
-            }
-        }
-        if (three) {
-            if (pairs != 0) {
-                m_hand_type = HandType::full_house;
+            if (jokers == 2) {
+                m_hand_type = HandType::five_of_kind;
                 return;
             }
             m_hand_type = HandType::three_of_kind;
             return;
-        }
-        if (pairs == 2) {
+        case HandType::two_pair:
+            if (jokers == 1) {
+                m_hand_type = HandType::full_house;
+                return;
+            }
             m_hand_type = HandType::two_pair;
             return;
-        }
-        if (pairs == 1) {
+        case HandType::one_pair:
+            if (jokers == 3) {
+                m_hand_type = HandType::five_of_kind;
+                return;
+            }
+            if (jokers == 2) {
+                m_hand_type = HandType::four_of_kind;
+                return;
+            }
+            if (jokers == 1) {
+                m_hand_type = HandType::three_of_kind;
+                return;
+            }
             m_hand_type = HandType::one_pair;
             return;
+        case HandType::high_card:
+            if (jokers == 5) {
+                m_hand_type = HandType::five_of_kind;
+                return;
+            }
+            if (jokers == 4) {
+                m_hand_type = HandType::five_of_kind;
+                return;
+            }
+            if (jokers == 3) {
+                m_hand_type = HandType::four_of_kind;
+                return;
+            }
+            if (jokers == 2) {
+                m_hand_type = HandType::three_of_kind;
+                return;
+            }
+            if (jokers == 1) {
+                m_hand_type = HandType::one_pair;
+                return;
+            }
+            m_hand_type = HandType::high_card;
         }
-        m_hand_type = HandType::high_card;
     }
 
     std::array<char, 5> m_cards;
@@ -183,9 +258,14 @@ static int64_t solve(const std::string& data)
             return a.type() < b.type();
         }
         for (int i = 0; i < 5; ++i) {
-            const int a_idx = calc_card_index(a.cards()[i]);
-            // ReSharper disable once CppTooWideScopeInitStatement
-            const int b_idx = calc_card_index(b.cards()[i]);
+            int a_idx = calc_card_index(a.cards()[i]);
+            if (a_idx == 9) {
+                a_idx = -1;
+            }
+            int b_idx = calc_card_index(b.cards()[i]);
+            if (b_idx == 9) {
+                b_idx = -1;
+            }
             if (a_idx != b_idx) {
                 return a_idx < b_idx;
             }
@@ -204,7 +284,7 @@ static int64_t solve(const std::string& data)
 
 int main()
 {
-    const std::string data = read_data("./day-7-part-1/input.txt");
+    const std::string data = read_data("./day-7-part-2/input.txt");
 
 #ifdef BENCHMARK
     constexpr int n_runs = 10000;
