@@ -89,20 +89,37 @@ static int calc_card_index(const char card)
     }
 }
 
-struct Hand {
-    std::array<char, 5> cards;
-    int bid;
-    std::optional<HandType> hand_type {};
-
-    [[nodiscard]] HandType type()
+class Hand {
+public:
+    Hand(const std::array<char, 5> cards, const int bid) // NOLINT(*-pro-type-member-init)
+        : m_cards(cards)
+        , m_bid(bid)
     {
-        if (hand_type.has_value()) {
-            return *hand_type;
-        }
+        calc_type();
+    }
+
+    [[nodiscard]] HandType type() const
+    {
+        return m_hand_type;
+    }
+
+    [[nodiscard]] int bid() const
+    {
+        return m_bid;
+    }
+
+    [[nodiscard]] const std::array<char, 5>& cards() const
+    {
+        return m_cards;
+    }
+
+private:
+    void calc_type()
+    {
         std::array<int, 13> occurrences {};
         int highest_card_index = 0;
         for (int i = 0; i < 5; ++i) {
-            const int card_index = calc_card_index(cards[i]);
+            const int card_index = calc_card_index(m_cards[i]);
             if (card_index > highest_card_index) {
                 highest_card_index = card_index;
             }
@@ -112,12 +129,12 @@ struct Hand {
         int pairs = 0;
         for (int i = 0; i < 13; ++i) {
             if (occurrences[i] == 5) {
-                hand_type = HandType::five_of_kind;
-                return HandType::five_of_kind;
+                m_hand_type = HandType::five_of_kind;
+                return;
             }
             if (occurrences[i] == 4) {
-                hand_type = HandType::four_of_kind;
-                return HandType::four_of_kind;
+                m_hand_type = HandType::four_of_kind;
+                return;
             }
             if (occurrences[i] == 3) {
                 three = true;
@@ -128,23 +145,26 @@ struct Hand {
         }
         if (three) {
             if (pairs != 0) {
-                hand_type = HandType::full_house;
-                return HandType::full_house;
+                m_hand_type = HandType::full_house;
+                return;
             }
-            hand_type = HandType::three_of_kind;
-            return HandType::three_of_kind;
+            m_hand_type = HandType::three_of_kind;
+            return;
         }
         if (pairs == 2) {
-            hand_type = HandType::two_pair;
-            return HandType::two_pair;
+            m_hand_type = HandType::two_pair;
+            return;
         }
         if (pairs == 1) {
-            hand_type = HandType::one_pair;
-            return HandType::one_pair;
+            m_hand_type = HandType::one_pair;
+            return;
         }
-        hand_type = HandType::high_card;
-        return HandType::high_card;
+        m_hand_type = HandType::high_card;
     }
+
+    std::array<char, 5> m_cards;
+    int m_bid;
+    HandType m_hand_type;
 };
 
 static int64_t solve(const std::string& data)
@@ -159,17 +179,18 @@ static int64_t solve(const std::string& data)
         i++;
         int bid;
         i = parse_num(bid, data, i);
-        hands.push_back({ cards, bid });
+
+        hands.emplace_back(cards, bid);
     }
 
-    std::ranges::sort(hands, [](Hand& a, Hand& b) {
+    std::ranges::sort(hands, [](const Hand& a, const Hand& b) {
         if (a.type() != b.type()) {
             return a.type() < b.type();
         }
         for (int i = 0; i < 5; ++i) {
-            const int a_idx = calc_card_index(a.cards[i]);
+            const int a_idx = calc_card_index(a.cards()[i]);
             // ReSharper disable once CppTooWideScopeInitStatement
-            const int b_idx = calc_card_index(b.cards[i]);
+            const int b_idx = calc_card_index(b.cards()[i]);
             if (a_idx != b_idx) {
                 return a_idx < b_idx;
             }
@@ -179,7 +200,7 @@ static int64_t solve(const std::string& data)
 
     int total = 0;
     for (int i = 0; i < hands.size(); ++i) {
-        total += hands[i].bid * (i + 1);
+        total += hands[i].bid() * (i + 1);
     }
     return total;
 }
