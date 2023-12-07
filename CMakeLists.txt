@@ -32,3 +32,5 @@ add_executable(day-5-part-2 day-5-part-2/main.cpp)
 add_executable(day-6-part-1 day-6-part-1/main.cpp)
 add_executable(day-6-part-2 day-6-part-2/main.cpp)
 
+add_executable(day-7-part-1 day-7-part-1/main.cpp)
+
