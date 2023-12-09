@@ -90,11 +90,12 @@ static int calc_card_index(const char card)
 
 class Hand {
 public:
-    Hand(const std::array<char, 5> cards, const int bid) // NOLINT(*-pro-type-member-init)
+    Hand(const std::array<char, 5> cards, const int bid)
         : m_cards(cards)
         , m_bid(bid)
+        , m_hand_type(calc_type(cards))
+        , m_tie_breaker(calc_tie_breaker(cards))
     {
-        calc_type();
     }
 
     [[nodiscard]] HandType type() const
@@ -112,12 +113,17 @@ public:
         return m_cards;
     }
 
+    [[nodiscard]] int tie_breaker() const
+    {
+        return m_tie_breaker;
+    }
+
 private:
-    void calc_type()
+    static HandType calc_type(const std::array<char, 5>& cards)
     {
         std::array<int, 13> occurrences {};
         for (int i = 0; i < 5; ++i) {
-            occurrences[calc_card_index(m_cards[i])]++;
+            occurrences[calc_card_index(cards[i])]++;
         }
 
         auto calc_basic_type = [&occurrences]() -> HandType {
@@ -158,83 +164,77 @@ private:
         const int jokers = occurrences[9];
         switch (calc_basic_type()) {
         case HandType::five_of_kind:
-            m_hand_type = HandType::five_of_kind;
-            return;
+            return HandType::five_of_kind;
         case HandType::four_of_kind:
             if (jokers == 1) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
-            m_hand_type = HandType::four_of_kind;
-            return;
+            return HandType::four_of_kind;
         case HandType::full_house:
             if (jokers == 3 || jokers == 2) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
-            m_hand_type = HandType::full_house;
-            return;
+            return HandType::full_house;
         case HandType::three_of_kind:
             if (jokers == 3 || jokers == 1) {
-                m_hand_type = HandType::four_of_kind;
-                return;
+                return HandType::four_of_kind;
             }
             if (jokers == 2) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
-            m_hand_type = HandType::three_of_kind;
-            return;
+            return HandType::three_of_kind;
         case HandType::two_pair:
             if (jokers == 1) {
-                m_hand_type = HandType::full_house;
-                return;
+                return HandType::full_house;
             }
-            m_hand_type = HandType::two_pair;
-            return;
+            return HandType::two_pair;
         case HandType::one_pair:
             if (jokers == 3) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
             if (jokers == 2) {
-                m_hand_type = HandType::four_of_kind;
-                return;
+                return HandType::four_of_kind;
             }
             if (jokers == 1) {
-                m_hand_type = HandType::three_of_kind;
-                return;
+                return HandType::three_of_kind;
             }
-            m_hand_type = HandType::one_pair;
-            return;
+            return HandType::one_pair;
         case HandType::high_card:
             if (jokers == 5) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
             if (jokers == 4) {
-                m_hand_type = HandType::five_of_kind;
-                return;
+                return HandType::five_of_kind;
             }
             if (jokers == 3) {
-                m_hand_type = HandType::four_of_kind;
-                return;
+                return HandType::four_of_kind;
             }
             if (jokers == 2) {
-                m_hand_type = HandType::three_of_kind;
-                return;
+                return HandType::three_of_kind;
             }
             if (jokers == 1) {
-                m_hand_type = HandType::one_pair;
-                return;
+                return HandType::one_pair;
             }
-            m_hand_type = HandType::high_card;
+            return HandType::high_card;
         }
+        throw std::runtime_error("Unreachable");
+    }
+
+    static int calc_tie_breaker(const std::array<char, 5>& cards)
+    {
+        constexpr std::array adjusted { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 10, 11, 12 };
+        int total = adjusted[calc_card_index(cards[0])] * 28561; // 13^4
+        total += adjusted[calc_card_index(cards[1])] * 2197; // 13^3
+        total += adjusted[calc_card_index(cards[2])] * 169; // 13^2
+        total += adjusted[calc_card_index(cards[3])] * 13; // 13^1
+        total += adjusted[calc_card_index(cards[4])];
+        return total;
     }
 
     std::array<char, 5> m_cards;
     int m_bid;
     HandType m_hand_type;
+    int m_tie_breaker;
 };
 
 static int64_t solve(const std::string& data)
@@ -257,19 +257,7 @@ static int64_t solve(const std::string& data)
         if (a.type() != b.type()) {
             return a.type() < b.type();
         }
-        for (int i = 0; i < 5; ++i) {
-            int a_idx = calc_card_index(a.cards()[i]);
-            if (a_idx == 9) {
-                a_idx = -1;
-            }
-            int b_idx = calc_card_index(b.cards()[i]);
-            if (b_idx == 9) {
-                b_idx = -1;
-            }
-            if (a_idx != b_idx) {
-                return a_idx < b_idx;
-            }
-        }
+        return a.tie_breaker() < b.tie_breaker();
         throw std::runtime_error("Hands are equal");
     });
 
