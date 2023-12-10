@@ -1,4 +1,5 @@
 #include <array>
+#include <bitset>
 #include <filesystem>
 #include <fstream>
 #include <iostream>

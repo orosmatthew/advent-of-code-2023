@@ -4,10 +4,11 @@ My advent of code solutions. The goal is to have the fastest execution speed so 
 
 ## Benchmarks
 
-All tests are performed on latest Windows 11 23H2 with Clang 17 using a 12600K CPU. The benchmarks do not include loading the input file into memory, only solving the problem.
+All tests are performed on latest Windows 11 23H2 with Clang 17 using a 12600K CPU. The benchmarks do not include
+loading the input file into memory, only solving the problem.
 
 |   Problem    | Average Nanoseconds | Iterations |
-| :----------: | :-----------------: | :--------: |
+|:------------:|:-------------------:|:----------:|
 | Day 1 Part 1 |       16,865        |  100,000   |
 | Day 1 Part 2 |       21,222        |  100,000   |
 | Day 2 Part 1 |        3,271        |  100,000   |
