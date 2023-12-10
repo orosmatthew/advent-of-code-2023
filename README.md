@@ -24,6 +24,7 @@ All tests are performed on latest Windows 11 23H2 with Clang 17 using a 12600K C
 | Day 7 Part 2 |       111,670       |   10,000   |
 | Day 8 Part 1 |       51,663        |  100,000   |
 | Day 8 Part 2 |       301,582       |   10,000   |
+| Day 9 Part 1 |       42,537        |  100,000   |
 
 ## Build Instructions
 
