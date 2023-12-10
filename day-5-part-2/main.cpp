@@ -10,7 +10,7 @@
 
 static std::string read_data(const std::filesystem::path& path)
 {
-    std::fstream in_file(path);
+    const std::fstream in_file(path);
     std::stringstream ss;
     ss << in_file.rdbuf();
     return ss.str();
@@ -140,7 +140,6 @@ static uint32_t solve(const std::string& data)
         }
     }
     return min_loc;
-    ;
 }
 
 // #define BENCHMARK

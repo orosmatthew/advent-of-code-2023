@@ -7,7 +7,7 @@
 
 static std::string read_data(const std::filesystem::path& path)
 {
-    std::fstream in_file(path);
+    const std::fstream in_file(path);
     std::stringstream ss;
     ss << in_file.rdbuf();
     return ss.str();
@@ -73,7 +73,7 @@ static int solve(const std::string& data)
             nums_size = 0;
         }
         i++;
-    };
+    }
     return total;
 }
 
