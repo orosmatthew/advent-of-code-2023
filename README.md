@@ -28,6 +28,7 @@ loading the input file into memory, only solving the problem.
 | Day 9 Part 1  |       42,537        |  100,000   |
 | Day 9 Part 2  |       42,210        |  100,000   |
 | Day 10 Part 1 |       58,608        |  100,000   |
+| Day 10 Part 2 |       122,842       |   10,000   |
 
 ## Build Instructions
 
